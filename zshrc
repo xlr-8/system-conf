@@ -300,7 +300,6 @@ setopt ZLE
 
 # Alias
 alias c='clear'
-alias cd='setprompt; cd'
 alias cat='cat -v'
 alias cp='cp -v'
 alias df='df -h'
@@ -418,6 +417,15 @@ setenv()
 ### Prompt system for school and home compatibility.
 ###
 ######################################################################
+# Need to: git clone https://github.com/olivierverdier/zsh-git-prompt.git ${HOME}/.config/zshrc
+source ${HOME}/.config/zshrc/zshrc.sh
+setopt promptsubst
+
+preexec () {
+  setprompt
+  PROMPT="${PROMPT} $(git_super_status)> "
+}
+
 setprompt()
 {
     CL_NORMAL=$'%{\e[0m%}'          # normal
@@ -431,8 +439,6 @@ setprompt()
     CL_CYAN=$'%{\e[0;36m%}'         # cyan
     CL_SPECIAL=$'%{\e[1;30m%}'      # bold grey
     CL_RESULT=$'%{%(?,v,\e[0;31mx\e[0m)%}'        # cmd result
-	CL_BRANCH=$(git symbolic-ref HEAD 2>/dev/null | cut -d'/' -f3)
-#%(?,v,${CL_RED}x${CL_NORMAL})
     if [ ${USER} = 'root' ]
     then
         PR_USER="[${CL_RED}%n${CL_NORMAL} @"
@@ -440,7 +446,7 @@ setprompt()
         RPROMPT="[${CL_PURPLE}%~${CL_NORMAL}]"
     else
         PR_USER="[${CL_RESULT}] ${CL_GREEN_DEEP}UgO:${CL_NORMAL}"
-        PR_HOST="${CL_BRANCH}${CL_GREEN}:%m${CL_NORMAL}> "
+        PR_HOST="${CL_BRANCH}${CL_GREEN}:%m${CL_NORMAL}"
         RPROMPT="[${CL_YELLOW}%~${CL_NORMAL}]"
     fi
     PROMPT="${PR_USER}${PR_HOST}"
